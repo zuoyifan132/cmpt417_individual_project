@@ -88,8 +88,14 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
     #               by time step, see build_constraint_table.
 
     if next_time in constraint_table.keys():
-        if constraint_table[next_time]['loc'] == next_loc:       # only need to check next_loc?
-            return False
+        # check vertex constraint
+        if len(constraint_table[next_time]['loc']) == 1:
+            if constraint_table[next_time]['loc'][0] == next_loc:       # only need to check next_loc?
+                return False
+        # check edge constraint
+        else:
+            if constraint_table[next_time]['loc'][0] == curr_loc and constraint_table[next_time]['loc'][1] == next_loc:
+                return False
     return True
 
 

@@ -1,0 +1,56 @@
+parallels@parallels-Parallels-Virtual-Platform:~/Desktop/Parallels Shared FolderHome/Desktop/大四/second_semester/cmpt417/cmpt417_individual_project/code$ python3 run_experiments.py --instance instances/exp1.txt --solver Prioritized
+***Import an instance***
+Start locations
+@ @ @ @ @ @ @ 
+@ 0 1 . . . @ 
+@ @ @ . @ @ @ 
+@ @ @ @ @ @ @ 
+
+Goal locations
+@ @ @ @ @ @ @ 
+@ . . . 1 0 @ 
+@ @ @ . @ @ @ 
+@ @ @ @ @ @ @ 
+
+***Run Prioritized***
+prune
+
+ Found a solution! 
+
+CPU time (s):    0.00
+Sum of costs:    7
+[[(1, 1), (1, 2), (1, 3), (1, 4), (1, 5)], [(1, 2), (1, 2), (1, 3), (1, 4)]]
+***Test paths on a simulation***
+COLLISION! (agent-agent) (0, 1) at time 1.4
+COLLISION! (agent-agent) (0, 1) at time 1.5
+COLLISION! (agent-agent) (0, 1) at time 1.6
+COLLISION! (agent-agent) (0, 1) at time 1.7
+COLLISION! (agent-agent) (0, 1) at time 1.8
+COLLISION! (agent-agent) (0, 1) at time 1.9
+COLLISION! (agent-agent) (0, 1) at time 2.0
+COLLISION! (agent-agent) (0, 1) at time 2.1
+COLLISION! (agent-agent) (0, 1) at time 2.2
+COLLISION! (agent-agent) (0, 1) at time 2.3
+COLLISION! (agent-agent) (0, 1) at time 2.4
+COLLISION! (agent-agent) (0, 1) at time 2.5
+COLLISION! (agent-agent) (0, 1) at time 2.6
+COLLISION! (agent-agent) (0, 1) at time 2.7
+COLLISION! (agent-agent) (0, 1) at time 2.8
+COLLISION! (agent-agent) (0, 1) at time 2.9
+COLLISION! (agent-agent) (0, 1) at time 3.0
+COLLISION! (agent-agent) (0, 1) at time 3.1
+COLLISION! (agent-agent) (0, 1) at time 3.2
+COLLISION! (agent-agent) (0, 1) at time 3.3
+COLLISION! (agent-agent) (0, 1) at time 3.4
+COLLISION! (agent-agent) (0, 1) at time 3.5
+COLLISION! (agent-agent) (0, 1) at time 3.6
+COLLISION! (agent-agent) (0, 1) at time 3.7
+COLLISION! (agent-agent) (0, 1) at time 3.8
+COLLISION! (agent-agent) (0, 1) at time 3.9
+COLLISION! (agent-agent) (0, 1) at time 4.0
+COLLISION! (agent-agent) (0, 1) at time 4.1
+COLLISION! (agent-agent) (0, 1) at time 4.2
+COLLISION! (agent-agent) (0, 1) at time 4.3
+COLLISION! (agent-agent) (0, 1) at time 4.4
+COLLISION! (agent-agent) (0, 1) at time 4.5
+COLLISION! (agent-agent) (0, 1) at time 4.6
