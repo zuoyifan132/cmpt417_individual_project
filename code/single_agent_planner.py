@@ -49,12 +49,17 @@ def compute_heuristics(my_map, goal):
 
 def build_constraint_table(constraints, agent):
     ##############################
-    # Task 1.2/1.3: Return a table that constains the list of constraints of
+    # Task 1.2/1.3: Return a table that contains the list of constraints of
     #               the given agent for each time step. The table can be used
     #               for a more efficient constraint violation check in the 
     #               is_constrained function.
 
-    pass
+    constraint_table = dict()
+    for constraint in constraints:
+        time_step = constraint['timestep']   
+        constraint_table[time_step] = constraint
+
+    return constraint_table            
 
 
 def get_location(path, time):
@@ -82,7 +87,10 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
     #               any given constraint. For efficiency the constraints are indexed in a constraint_table
     #               by time step, see build_constraint_table.
 
-    pass
+    if next_time in constraint_table.keys():
+        if constraint_table[next_time]['loc'] == next_loc:       # only need to check next_loc?
+            return False
+    return True
 
 
 def push_node(open_list, node):
@@ -115,6 +123,10 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     closed_list = dict()
     earliest_goal_timestep = 0
     h_value = h_values[start_loc]
+
+    # Task 1.2 add constraint_table 
+    constraint_table = build_constraint_table(constraints, agent)
+
     root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 'timestep': 0}
     push_node(open_list, root)
     closed_list[(root['loc'], 0)] = root
@@ -124,21 +136,30 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
         # Task 1.4: Adjust the goal test condition to handle goal constraints
         if curr['loc'] == goal_loc:
             return get_path(curr)
+
+        # expand curr node 
         for dir in range(5):                                # add wait direction to range 5
             child_loc = move(curr['loc'], dir)
-            if my_map[child_loc[0]][child_loc[1]]:          # the position is True meaning '@' invalid movement
+            if my_map[child_loc[0]][child_loc[1]]:          # the position is True meaning '@': invalid movement
                 continue
             child = {'loc': child_loc,
                     'g_val': curr['g_val'] + 1,
                     'h_val': h_values[child_loc],
                     'parent': curr,
                     'timestep': curr['timestep'] + 1}
+
+            # Task 1.2 check constraint, if doesn't just prune it
+            if not is_constrained(curr['loc'], child['loc'], child['timestep'], constraint_table):
+                print("prune")
+                continue
+
+            # expand the old(in closed list) child if with smaller f-val        
             if (child['loc'], child['timestep']) in closed_list:
-                print("In closed list")
                 existing_node = closed_list[(child['loc'], child['timestep'])]
-                if compare_nodes(child, existing_node):                        # should update the old
-                    closed_list[(child['loc'], child['timestep'])] = child     # f-val smaller, then update
-                    push_node(open_list, child)                                # put in open list
+                if compare_nodes(child, existing_node):                        
+                    closed_list[(child['loc'], child['timestep'])] = child     
+                    push_node(open_list, child)      
+            # expand the child if it isn't in closed list                          
             else:
                 closed_list[(child['loc'], child['timestep'])] = child
                 push_node(open_list, child)
