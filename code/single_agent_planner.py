@@ -56,8 +56,11 @@ def build_constraint_table(constraints, agent):
 
     constraint_table = dict()
     for constraint in constraints:
-        time_step = constraint['timestep']   
-        constraint_table[time_step] = constraint
+        time_step = constraint['timestep'] 
+        # new time step
+        if time_step not in constraint_table.keys():
+            constraint_table[time_step] = []
+        constraint_table[time_step].append(constraint)
 
     return constraint_table            
 
@@ -88,14 +91,15 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
     #               by time step, see build_constraint_table.
 
     if next_time in constraint_table.keys():
-        # check vertex constraint
-        if len(constraint_table[next_time]['loc']) == 1:
-            if constraint_table[next_time]['loc'][0] == next_loc:       # only need to check next_loc?
-                return False
-        # check edge constraint
-        else:
-            if constraint_table[next_time]['loc'][0] == curr_loc and constraint_table[next_time]['loc'][1] == next_loc:
-                return False
+        for same_time_constraint in constraint_table[next_time]:
+            # check vertex constraint
+            if len(same_time_constraint['loc']) == 1:
+                if same_time_constraint['loc'][0] == next_loc:       # only need to check next_loc?
+                    return False
+            # check edge constraint
+            else:
+                if same_time_constraint['loc'][0] == curr_loc and same_time_constraint['loc'][1] == next_loc:
+                    return False
     return True
 
 
@@ -125,6 +129,8 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     # Task 1.1: Extend the A* search to search in the space-time domain
     #           rather than space domain, only.
 
+    print("agent: ", agent)
+
     open_list = []
     closed_list = dict()
     earliest_goal_timestep = 0
@@ -132,6 +138,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
 
     # Task 1.2 add constraint_table 
     constraint_table = build_constraint_table(constraints, agent)
+    max_time = max(constraint_table.keys())
 
     root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 'timestep': 0}
     push_node(open_list, root)
@@ -140,7 +147,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
         curr = pop_node(open_list)
         #############################
         # Task 1.4: Adjust the goal test condition to handle goal constraints
-        if curr['loc'] == goal_loc:
+        if curr['loc'] == goal_loc and curr['timestep'] >= max_time:
             return get_path(curr)
 
         # expand curr node 

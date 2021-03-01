@@ -1,0 +1,8 @@
+Agent 0 is at (1,4) at time step 10 in my solution.
+Changes to the goal test condistion:
+I compute the maximal time step that constraint table contains, and then add 
+another condition in goal test condition that current node time step must great than or equal to that time 
+in order to reutrn the solution path.
+
+
+parallels@parallels-Parallels-Virtual-Platform:~/Desktop/Parallels Shared Folders/Home/Desktop/大四/second_semester/cmpt417/cmpt417_individual_projectode$ python3 run_experiments.py --instance instances/exp1.txt --solver Prioritized***Import an instance***Start locations@ @ @ @ @ @ @ @ 0 1 . . . @ @ @ @ . @ @ @ @ @ @ @ @ @ @ Goal locations@ @ @ @ @ @ @ @ . . . 1 0 @ @ @ @ . @ @ @ @ @ @ @ @ @ @ ***Run Prioritized***prunepruneprune Found a solution! CPU time (s):    0.00Sum of costs:    21[[(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 5), (1, 5), (1, 5), (1, 5), (1, 5), (1, 4), (1, 5)], [(1, 2), (1, 3), (1, 4), (1, 4), (1, 4), (1, 4), (1, 4), (1, 4), (1, 4), (1, 4), (1, 4)]]
