@@ -59,8 +59,8 @@ class PrioritizedPlanningSolver(object):
             # add constraints for all after agents 
             current_path = result[i]
 
-            timestep = 0
             # add vertex constraints
+            timestep = 0
             for position in current_path:
                 # each agent need to add constraint relate to current path
                 for each_agent in range(i+1, self.num_of_agents):
@@ -69,8 +69,8 @@ class PrioritizedPlanningSolver(object):
                         constraints.append(need_to_append)
                 timestep += 1
 
-            timestep = 1
             # add edge constraints
+            timestep = 1
             for j in range(len(current_path)-1):
                 for each_agent in range(i+1, self.num_of_agents):
                     need_to_append = {'agent':each_agent, 'loc':[current_path[j+1], current_path[j]], 'timestep':timestep}

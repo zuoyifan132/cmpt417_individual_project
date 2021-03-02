@@ -140,7 +140,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     open_list = []
     closed_list = dict()
     earliest_goal_timestep = 0
-    h_value = h_values[start_loc]
+    h_value = h_values[start_loc]       # when block (1,3) in exp2_1, the h_value doesn't exist???
 
     # Task 1.2 add constraint_table 
     constraint_table = build_constraint_table(constraints, agent)
@@ -151,7 +151,11 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 'timestep': 0}
     push_node(open_list, root)
     closed_list[(root['loc'], 0)] = root
-    while len(open_list) > 0:
+
+    # add time limit to avoid infinite loop
+    time_limit = (agent+1)*len(my_map)*len(my_map[0])
+
+    while len(open_list) > 0 and time_limit > 0:
         curr = pop_node(open_list)
         #############################
         # Task 1.4: Adjust the goal test condition to handle goal constraints
@@ -178,10 +182,13 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
                 existing_node = closed_list[(child['loc'], child['timestep'])]
                 if compare_nodes(child, existing_node):                        
                     closed_list[(child['loc'], child['timestep'])] = child     
-                    push_node(open_list, child)      
+                    push_node(open_list, child) 
+
             # expand the child if it isn't in closed list                          
             else:
                 closed_list[(child['loc'], child['timestep'])] = child
                 push_node(open_list, child)
+
+            time_limit -= 1
 
     return None  # Failed to find solutions
