@@ -56,11 +56,12 @@ def build_constraint_table(constraints, agent):
 
     constraint_table = dict()
     for constraint in constraints:
-        time_step = constraint['timestep'] 
-        # new time step
-        if time_step not in constraint_table.keys():
-            constraint_table[time_step] = []
-        constraint_table[time_step].append(constraint)
+        if constraint['agent'] == agent:
+            time_step = constraint['timestep'] 
+            # new time step
+            if time_step not in constraint_table.keys():
+                constraint_table[time_step] = []
+            constraint_table[time_step].append(constraint)
 
     return constraint_table            
 
@@ -83,8 +84,8 @@ def get_path(goal_node):
     path.reverse()
     return path
 
-# need agent argument ????
-def is_constrained(agent, curr_loc, next_loc, next_time, constraint_table):
+
+def is_constrained(curr_loc, next_loc, next_time, constraint_table):
     ##############################
     # Task 1.2/1.3: Check if a move from curr_loc to next_loc at time step next_time violates
     #               any given constraint. For efficiency the constraints are indexed in a constraint_table
@@ -92,16 +93,14 @@ def is_constrained(agent, curr_loc, next_loc, next_time, constraint_table):
 
     if next_time in constraint_table.keys():
         for same_time_constraint in constraint_table[next_time]:
-            # check the constraint is for corresponding agent
-            if same_time_constraint['agent'] == agent:
-                # check vertex constraint
-                if len(same_time_constraint['loc']) == 1:
-                    if same_time_constraint['loc'][0] == next_loc:       # only need to check next_loc?
-                        return False
-                # check edge constraint
-                else:
-                    if same_time_constraint['loc'][0] == curr_loc and same_time_constraint['loc'][1] == next_loc:
-                        return False
+            # check vertex constraint
+            if len(same_time_constraint['loc']) == 1:
+                if same_time_constraint['loc'][0] == next_loc:       # only need to check next_loc?
+                    return False
+            # check edge constraint
+            else:
+                if same_time_constraint['loc'][0] == curr_loc and same_time_constraint['loc'][1] == next_loc:
+                    return False
     return True
 
 
@@ -131,8 +130,6 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     # Task 1.1: Extend the A* search to search in the space-time domain
     #           rather than space domain, only.
 
-    print("agent: ", agent)
-
     open_list = []
     closed_list = dict()
     earliest_goal_timestep = 0
@@ -140,7 +137,9 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
 
     # Task 1.2 add constraint_table 
     constraint_table = build_constraint_table(constraints, agent)
-    max_time = max(constraint_table.keys())
+    max_time = 0
+    if len(constraint_table.keys()) > 0:
+        max_time = max(constraint_table.keys())
 
     root = {'loc': start_loc, 'g_val': 0, 'h_val': h_value, 'parent': None, 'timestep': 0}
     push_node(open_list, root)
@@ -164,8 +163,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
                     'timestep': curr['timestep'] + 1}
 
             # Task 1.2 check constraint, if doesn't just prune it
-            if not is_constrained(agent, curr['loc'], child['loc'], child['timestep'], constraint_table):
-                print("prune")
+            if not is_constrained(curr['loc'], child['loc'], child['timestep'], constraint_table):
                 continue
 
             # expand the old(in closed list) child if with smaller f-val        
