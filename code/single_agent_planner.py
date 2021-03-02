@@ -170,8 +170,14 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
         # expand curr node 
         for dir in range(5):                                # add wait direction to range 5
             child_loc = move(curr['loc'], dir)
+
+            # set boudary constraint 
+            if child_loc[0] < 0 or child_loc[1] < 0 or child_loc[0] >= len(my_map) or child_loc[1] >= len(my_map[0]): 
+                continue
+            # encounter a block
             if my_map[child_loc[0]][child_loc[1]]:          # the position is True meaning '@': invalid movement
                 continue
+
             child = {'loc': child_loc,
                     'g_val': curr['g_val'] + 1,
                     'h_val': h_values[child_loc],
