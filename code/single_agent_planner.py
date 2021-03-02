@@ -101,6 +101,13 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
             else:
                 if same_time_constraint['loc'][0] == curr_loc and same_time_constraint['loc'][1] == next_loc:
                     return False
+
+    # prohibit for all future time, it's only possible to be vertex constraint 
+    elif (-1) in constraint_table.keys():
+        for same_time_constraint in constraint_table[-1]:
+            if same_time_constraint['loc'][0] == next_loc:
+                return False
+
     return True
 
 

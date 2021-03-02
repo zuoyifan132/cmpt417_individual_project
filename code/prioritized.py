@@ -56,28 +56,34 @@ class PrioritizedPlanningSolver(object):
             #            * self.num_of_agents has the number of total agents
             #            * constraints: array of constraints to consider for future A* searches
 
-            # add constraints for all agents except agent 0
-            current_agent = 0
-            if i == current_agent:
-                current_path = result[0]
-                
-                timestep = 0
-                # add vertex constraints
-                for position in current_path:
-                    # each agent need to add constraint relate to current path
-                    for each_agent in range(self.num_of_agents):
-                        if each_agent != i:
-                            constraints.append({'agent':each_agent, 'loc':[position], 'timestep':timestep})
-                    timestep += 1
+            # add constraints for all after agents 
+            current_path = result[i]
 
-                timestep = 1
-                # add edge constraints
-                for j in range(len(current_path)-1):
-                    for each_agent in range(self.num_of_agents):
-                        if each_agent != i:
-                            constraints.append({'agent':each_agent, 'loc':[current_path[j+1], current_path[j]], 'timestep':timestep})
-                    timestep += 1
-                print(constraints)
+            timestep = 0
+            # add vertex constraints
+            for position in current_path:
+                # each agent need to add constraint relate to current path
+                for each_agent in range(i+1, self.num_of_agents):
+                    need_to_append = {'agent':each_agent, 'loc':[position], 'timestep':timestep}
+                    if need_to_append not in constraints:
+                        constraints.append(need_to_append)
+                timestep += 1
+
+            timestep = 1
+            # add edge constraints
+            for j in range(len(current_path)-1):
+                for each_agent in range(i+1, self.num_of_agents):
+                    need_to_append = {'agent':each_agent, 'loc':[current_path[j+1], current_path[j]], 'timestep':timestep}
+                    if need_to_append not in constraints:
+                        constraints.append(need_to_append)
+                timestep += 1
+
+            # add additional constraints
+            # -1 represent all future time
+            for each_agent in range(i+1, self.num_of_agents):
+                need_to_append = {'agent':each_agent, 'loc':[current_path[len(current_path)-1]], 'timestep':-1}
+                if need_to_append not in constraints:
+                        constraints.append(need_to_append)
 
             ##############################
 

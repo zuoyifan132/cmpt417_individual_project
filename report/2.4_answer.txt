@@ -1,0 +1,19 @@
+There is infinite loop and my solver didn't terminate. 
+
+Output of the termial:
+
+parallels@parallels-Parallels-Virtual-Platform:~/Desktop/Parallels Shared Folders/Home/Desktop/大四/second_semester/cmpt417/cmpt417_indivual_project/code$ python3 run_experiments.py --instance instances/exp2_3.txt --solver Prioritized
+***Import an instance***
+Start locations
+@ @ @ @ @ @ @ 
+@ 1 0 . . . @ 
+@ @ @ . @ @ @ 
+@ @ @ @ @ @ @ 
+
+Goal locations
+@ @ @ @ @ @ @ 
+@ . . . 0 1 @ 
+@ @ @ . @ @ @ 
+@ @ @ @ @ @ @ 
+
+***Run Prioritized***
