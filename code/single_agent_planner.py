@@ -140,6 +140,11 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     open_list = []
     closed_list = dict()
     earliest_goal_timestep = 0
+
+    # the goal location is not connect to the start location: No solution!
+    if start_loc not in h_values.keys():
+        return None
+
     h_value = h_values[start_loc]       # when block (1,3) in exp2_1, the h_value doesn't exist???
 
     # Task 1.2 add constraint_table 
