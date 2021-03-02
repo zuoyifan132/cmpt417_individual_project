@@ -35,12 +35,12 @@ class PrioritizedPlanningSolver(object):
         #constraints.append({'agent':1, 'loc':[(1,2), (1,3)], 'timestep':1})
 
         # Test Task 1.5
-        
+        """
         constraints.append({'agent':1, 'loc':[(1,3), (1,2)], 'timestep':2})
         constraints.append({'agent':1, 'loc':[(1,3), (1,3)], 'timestep':2})
         constraints.append({'agent':1, 'loc':[(1,3), (1,4)], 'timestep':2})
         constraints.append({'agent':1, 'loc':[(1,2)], 'timestep':1})
-        
+        """
         
         for i in range(self.num_of_agents):  # Find path for each agent
             path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
@@ -56,11 +56,28 @@ class PrioritizedPlanningSolver(object):
             #            * self.num_of_agents has the number of total agents
             #            * constraints: array of constraints to consider for future A* searches
 
-            #current_agent = 0
-            #Prioritized_path = path[current_agent]
-            # iterate over the path of current agent
+            # add constraints for all agents except agent 0
+            current_agent = 0
+            if i == current_agent:
+                current_path = result[0]
+                
+                timestep = 0
+                # add vertex constraints
+                for position in current_path:
+                    # each agent need to add constraint relate to current path
+                    for each_agent in range(self.num_of_agents):
+                        if each_agent != i:
+                            constraints.append({'agent':each_agent, 'loc':[position], 'timestep':timestep})
+                    timestep += 1
 
-
+                timestep = 1
+                # add edge constraints
+                for j in range(len(current_path)-1):
+                    for each_agent in range(self.num_of_agents):
+                        if each_agent != i:
+                            constraints.append({'agent':each_agent, 'loc':[current_path[j+1], current_path[j]], 'timestep':timestep})
+                    timestep += 1
+                print(constraints)
 
             ##############################
 
