@@ -64,7 +64,7 @@ def build_constraint_table(constraints, agent):
     # expand positive constraints to negative constraints
     for constraint in temp_constraints:
         if constraint['positive'] == 1 and constraint['agent'] != agent:
-            temp_constraints.append({'agent':agent, 'loc':constraint['loc'], timestep:constraint['timestep'],
+            temp_constraints.append({'agent':agent, 'loc':constraint['loc'], 'timestep':constraint['timestep'],
                                      'positive':0})
 
     for constraint in temp_constraints:
