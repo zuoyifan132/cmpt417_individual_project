@@ -144,8 +144,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     # the goal location is not connect to the start location: No solution!
     if start_loc not in h_values.keys():
         return None
-
-    h_value = h_values[start_loc]       # when block (1,3) in exp2_1, the h_value doesn't exist???
+    h_value = h_values[start_loc]   
 
     # Task 1.2 add constraint_table 
     constraint_table = build_constraint_table(constraints, agent)
@@ -184,7 +183,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
                     'parent': curr,
                     'timestep': curr['timestep'] + 1}
 
-            # Task 1.2 check constraint, if doesn't just prune it
+            # Task 1.2 check constraint, if doesn't satisfied just prune it
             if not is_constrained(curr['loc'], child['loc'], child['timestep'], constraint_table):
                 continue
 
@@ -200,6 +199,6 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
                 closed_list[(child['loc'], child['timestep'])] = child
                 push_node(open_list, child)
 
-            time_limit -= 1
+        time_limit -= 1
 
     return None  # Failed to find solutions

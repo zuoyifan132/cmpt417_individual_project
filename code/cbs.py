@@ -210,6 +210,14 @@ class CBSSolver(object):
                 path = a_star(self.my_map, self.starts[constrainted_agent], self.goals[constrainted_agent], 
                               self.heuristics[constrainted_agent], constrainted_agent, child['constraints'])
 
+                '''if first_collision == {'a1': 0, 'a2': 1, 'loc': [(5, 4)], 'timestep': 9}:
+                    print("")
+                    print("path is:", path) 
+                    print("starts: ", self.starts[constrainted_agent])
+                    print("ends: ",self.goals[constrainted_agent])
+                    print("agent: ", constrainted_agent)
+                    print("constraints: ", child['constraints'])'''
+
                 if path is not None:
                     # replace the constrainted agent path by new path in parent paths
                     child['paths'][constrainted_agent] = path
@@ -217,10 +225,7 @@ class CBSSolver(object):
                     child['cost'] = get_sum_of_cost(child['paths'])
                     self.push_node(child)
 
-
-        #self.print_results(root)
-        #return root['paths']
-        raise BaseException('No solutions')
+        raise BaseException('No solutions here')
 
 
     def print_results(self, node):
@@ -230,4 +235,4 @@ class CBSSolver(object):
         print("Sum of costs:    {}".format(get_sum_of_cost(node['paths'])))
         print("Expanded nodes:  {}".format(self.num_of_expanded))
         print("Generated nodes: {}".format(self.num_of_generated))
-        #print(node['paths'])
+        print("Paths: ", node['paths'])
