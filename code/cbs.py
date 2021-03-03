@@ -71,14 +71,15 @@ def standard_splitting(collision):
     
     # vertex collision:
     if len(collision['loc']) == 1:
-        first_constraint = {'agent':collision['a1'], 'loc':collision['loc'], 'timestep':collision['timestep']}
-        second_constraint = {'agent':collision['a2'], 'loc':collision['loc'], 'timestep':collision['timestep']}
+        first_constraint = {'agent':collision['a1'], 'loc':collision['loc'], 'timestep':collision['timestep'], 'positive':0}
+        second_constraint = {'agent':collision['a2'], 'loc':collision['loc'], 'timestep':collision['timestep'], 'positive':0}
         return [first_constraint, second_constraint]
 
     # edge collision:
     else:
-        first_constraint = {'agent':collision['a1'], 'loc':collision['loc'], 'timestep':collision['timestep']}
-        second_constraint = {'agent':collision['a2'], 'loc':[collision['loc'][1], collision['loc'][0]], 'timestep':collision['timestep']}
+        first_constraint = {'agent':collision['a1'], 'loc':collision['loc'], 'timestep':collision['timestep'], 'positive':0}
+        second_constraint = {'agent':collision['a2'], 'loc':[collision['loc'][1], collision['loc'][0]], 
+                             'timestep':collision['timestep'], 'positive':0}
         return [first_constraint, second_constraint]
 
 def disjoint_splitting(collision):
@@ -95,7 +96,7 @@ def disjoint_splitting(collision):
     pass
 
 
-# deep copy of parent attributes
+# helper function: deep copy of parent attributes
 def copy_parent(parent):
     copy = []
     for i in parent:
@@ -209,14 +210,6 @@ class CBSSolver(object):
 
                 path = a_star(self.my_map, self.starts[constrainted_agent], self.goals[constrainted_agent], 
                               self.heuristics[constrainted_agent], constrainted_agent, child['constraints'])
-
-                '''if first_collision == {'a1': 0, 'a2': 1, 'loc': [(5, 4)], 'timestep': 9}:
-                    print("")
-                    print("path is:", path) 
-                    print("starts: ", self.starts[constrainted_agent])
-                    print("ends: ",self.goals[constrainted_agent])
-                    print("agent: ", constrainted_agent)
-                    print("constraints: ", child['constraints'])'''
 
                 if path is not None:
                     # replace the constrainted agent path by new path in parent paths

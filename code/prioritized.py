@@ -64,7 +64,7 @@ class PrioritizedPlanningSolver(object):
             for position in current_path:
                 # each agent need to add constraint relate to current path
                 for each_agent in range(i+1, self.num_of_agents):
-                    need_to_append = {'agent':each_agent, 'loc':[position], 'timestep':timestep}
+                    need_to_append = {'agent':each_agent, 'loc':[position], 'timestep':timestep, 'positive':0}
                     if need_to_append not in constraints:
                         constraints.append(need_to_append)
                 timestep += 1
@@ -73,7 +73,8 @@ class PrioritizedPlanningSolver(object):
             timestep = 1
             for j in range(len(current_path)-1):
                 for each_agent in range(i+1, self.num_of_agents):
-                    need_to_append = {'agent':each_agent, 'loc':[current_path[j+1], current_path[j]], 'timestep':timestep}
+                    need_to_append = {'agent':each_agent, 'loc':[current_path[j+1], current_path[j]], 'timestep':timestep, 
+                                      'positive':0}
                     if need_to_append not in constraints:
                         constraints.append(need_to_append)
                 timestep += 1
@@ -81,7 +82,8 @@ class PrioritizedPlanningSolver(object):
             # add additional constraints
             # -1 represent all future time
             for each_agent in range(i+1, self.num_of_agents):
-                need_to_append = {'agent':each_agent, 'loc':[current_path[len(current_path)-1]], 'timestep':-1}
+                need_to_append = {'agent':each_agent, 'loc':[current_path[len(current_path)-1]], 'timestep':-1, 
+                                  'positive':0}
                 if need_to_append not in constraints:
                         constraints.append(need_to_append)
 

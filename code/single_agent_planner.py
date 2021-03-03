@@ -55,7 +55,20 @@ def build_constraint_table(constraints, agent):
     #               is_constrained function.
 
     constraint_table = dict()
+    temp_constraints = []
+
+    # deep copy constraints
     for constraint in constraints:
+        temp_constraints.append(constraint)
+
+    # expand positive constraints to negative constraints
+    for constraint in temp_constraints:
+        if constraint['positive'] == 1 and constraint['agent'] != agent:
+            temp_constraints.append({'agent':agent, 'loc':constraint['loc'], timestep:constraint['timestep'],
+                                     'positive':0})
+
+    for constraint in temp_constraints:
+        # the constraint belong to the agent if the constraint is specific for 
         if constraint['agent'] == agent:
             time_step = constraint['timestep'] 
             # new time step
@@ -95,12 +108,24 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
         for same_time_constraint in constraint_table[next_time]:
             # check vertex constraint
             if len(same_time_constraint['loc']) == 1:
-                if same_time_constraint['loc'][0] == next_loc:       # only need to check next_loc?
-                    return False
+                # check negative constraint
+                if same_time_constraint['positive'] == 0:
+                    if same_time_constraint['loc'][0] == next_loc:
+                        return False
+                # check positive constraint
+                else:
+                    if same_time_constraint['loc'][0] == next_loc:
+                        return True
             # check edge constraint
             else:
-                if same_time_constraint['loc'][0] == curr_loc and same_time_constraint['loc'][1] == next_loc:
-                    return False
+                # check negative constraint
+                if same_time_constraint['positive'] == 0:
+                    if same_time_constraint['loc'][0] == curr_loc and same_time_constraint['loc'][1] == next_loc:
+                        return False
+                # check positive constraint      
+                else:
+                    if same_time_constraint['loc'][0] == curr_loc and same_time_constraint['loc'][1] == next_loc:
+                        return True
 
     # prohibit for all future time, it's only possible to be vertex constraint 
     elif (-1) in constraint_table.keys():
