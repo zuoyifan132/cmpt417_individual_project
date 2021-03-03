@@ -26,17 +26,10 @@ def detect_collision(path1, path2):
         if get_location(path1, i) == get_location(path2, i):
             return [[get_location(path1, i)], i]
 
-        # detect edge collision
+        # detect edge collisions        need return return both two of them?
         if i < max_path-1:
              if get_location(path1, i) == get_location(path2, i+1) and get_location(path2, i) == get_location(path1, i+1):
                 return [[get_location(path1, i), get_location(path1, i+1)], i+1]
-
-    """
-    # detect edge collision
-    for i in range(max_path-1):
-        if get_location(path1, i) == get_location(path2, i+1) and get_location(path2, i) == get_location(path1, i+1):
-            return [[get_location(path1, i), get_location(path1, i+1)], i+1]
-    """
 
     # no collision between two paths
     return None
@@ -67,9 +60,18 @@ def standard_splitting(collision):
     #           Edge collision: the first constraint prevents the first agent to traverse the specified edge at the
     #                          specified timestep, and the second constraint prevents the second agent to traverse the
     #                          specified edge at the specified timestep
+    
+    # vertex collision:
+    if len(collision['loc']) == 1:
+        first_constraint = {'agent':collision['a1'], 'loc':collision['loc'], 'timestep':collision['timestep']}
+        second_constraint = {'agent':collision['a2'], 'loc':collision['loc'], 'timestep':collision['timestep']}
+        return [first_constraint, second_constraint]
 
-    pass
-
+    # edge collision:
+    else:
+        first_constraint = {'agent':collision['a1'], 'loc':collision['loc'], 'timestep':collision['timestep']}
+        second_constraint = {'agent':collision['a2'], 'loc':[collision['loc'][1], collision['loc'][0]], 'timestep':collision['timestep']}
+        return [first_constraint, second_constraint]
 
 def disjoint_splitting(collision):
     ##############################
