@@ -14,22 +14,30 @@ def detect_collision(path1, path2):
 
     l1, l2 = len(path1), len(path2)
     max_path = max(l1, l2)
+
+    # deep copy of path1 and path2
+    temp_path1, temp_path2 = [], []
+    for pos in path1: 
+        temp_path1.append(pos)
+    for pos in path2:
+        temp_path2.append(pos)
+
     if l1 > l2:
         for i in range(l1-l2):
-            path2.append(path2[l2-1])
+            temp_path2.append(temp_path2[l2-1])
     else:
         for i in range(l2-l1):
-            path1.append(path1[l1-1])
+            temp_path1.append(temp_path1[l1-1])
 
     for i in range(max_path):
          # detect vertex collision
-        if get_location(path1, i) == get_location(path2, i):
-            return [[get_location(path1, i)], i]
+        if get_location(temp_path1, i) == get_location(temp_path2, i):
+            return [[get_location(temp_path1, i)], i]
 
-        # detect edge collisions        need return return both two of them?
+        # detect edge collisions     
         if i < max_path-1:
-             if get_location(path1, i) == get_location(path2, i+1) and get_location(path2, i) == get_location(path1, i+1):
-                return [[get_location(path1, i), get_location(path1, i+1)], i+1]
+             if get_location(temp_path1, i) == get_location(temp_path2, i+1) and get_location(temp_path2, i) == get_location(temp_path1, i+1):
+                return [[get_location(temp_path1, i), get_location(temp_path1, i+1)], i+1]
 
     # no collision between two paths
     return None
@@ -87,13 +95,13 @@ def disjoint_splitting(collision):
     pass
 
 
-# deep copy of parent constraints
-def copy_parent_constraints(p_constraints):
-    copy_constraints = []
-    for i in p_constraints:
-        copy_constraints.append(i)
+# deep copy of parent attributes
+def copy_parent(parent):
+    copy = []
+    for i in parent:
+        copy.append(i)
 
-    return copy_constraints
+    return copy
 
 
 class CBSSolver(object):
@@ -181,7 +189,6 @@ class CBSSolver(object):
 
         while len(self.open_list) > 0:
             curr = self.pop_node()     # firstly sorted with cost then sorted with #constraints 
-
             # no collision return solution
             if len(curr['collisions']) == 0:
                 self.print_results(curr)
@@ -193,11 +200,12 @@ class CBSSolver(object):
 
             # for each constraint add a new child node 
             for constraint in constraints:
-                # copy parent constraints to child 
-                child_constarints = copy_parent_constraints(curr['constraints'])
+                # deep copy parent attributes to child 
+                child_constarints = copy_parent(curr['constraints'])
                 child_constarints.append(constraint)
+                child_paths = copy_parent(curr['paths'])
                 constrainted_agent = constraint['agent']
-                child = {'cost':0, 'constraints':child_constarints, 'paths':curr['paths'], 'collisions':[]}
+                child = {'cost':0, 'constraints':child_constarints, 'paths':child_paths, 'collisions':[]}
 
                 path = a_star(self.my_map, self.starts[constrainted_agent], self.goals[constrainted_agent], 
                               self.heuristics[constrainted_agent], constrainted_agent, child['constraints'])
@@ -222,3 +230,4 @@ class CBSSolver(object):
         print("Sum of costs:    {}".format(get_sum_of_cost(node['paths'])))
         print("Expanded nodes:  {}".format(self.num_of_expanded))
         print("Generated nodes: {}".format(self.num_of_generated))
+        #print(node['paths'])
