@@ -87,6 +87,15 @@ def disjoint_splitting(collision):
     pass
 
 
+# deep copy of parent constraints
+def copy_parent_constraints(p_constraints):
+    copy_constraints = []
+    for i in p_constraints:
+        copy_constraints.append(i)
+
+    return copy_constraints
+
+
 class CBSSolver(object):
     """The high-level search of CBS."""
 
@@ -140,6 +149,7 @@ class CBSSolver(object):
                 'constraints': [],
                 'paths': [],
                 'collisions': []}
+
         for i in range(self.num_of_agents):  # Find initial path for each agent
             path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
                           i, root['constraints'])
@@ -151,12 +161,14 @@ class CBSSolver(object):
         root['collisions'] = detect_collisions(root['paths'])
         self.push_node(root)
 
+        '''
         # Task 3.1: Testing
         print(root['collisions'])
 
         # Task 3.2: Testing
         for collision in root['collisions']:
             print(standard_splitting(collision))
+        '''
 
         ##############################
         # Task 3.3: High-Level Search
@@ -167,8 +179,40 @@ class CBSSolver(object):
         #                standard_splitting function). Add a new child node to your open list for each constraint
         #           Ensure to create a copy of any objects that your child nodes might inherit
 
-        self.print_results(root)
-        return root['paths']
+        while len(self.open_list) > 0:
+            curr = self.pop_node()     # firstly sorted with cost then sorted with #constraints 
+
+            # no collision return solution
+            if len(curr['collisions']) == 0:
+                self.print_results(curr)
+                return curr['paths']
+
+            # choose the first collision
+            first_collision = curr['collisions'][0]
+            constraints = standard_splitting(first_collision)
+
+            # for each constraint add a new child node 
+            for constraint in constraints:
+                # copy parent constraints to child 
+                child_constarints = copy_parent_constraints(curr['constraints'])
+                child_constarints.append(constraint)
+                constrainted_agent = constraint['agent']
+                child = {'cost':0, 'constraints':child_constarints, 'paths':curr['paths'], 'collisions':[]}
+
+                path = a_star(self.my_map, self.starts[constrainted_agent], self.goals[constrainted_agent], 
+                              self.heuristics[constrainted_agent], constrainted_agent, child['constraints'])
+
+                if path is not None:
+                    # replace the constrainted agent path by new path in parent paths
+                    child['paths'][constrainted_agent] = path
+                    child['collisions'] = detect_collisions(child['paths'])
+                    child['cost'] = get_sum_of_cost(child['paths'])
+                    self.push_node(child)
+
+
+        #self.print_results(root)
+        #return root['paths']
+        raise BaseException('No solutions')
 
 
     def print_results(self, node):
