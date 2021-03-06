@@ -139,20 +139,31 @@ def copy_parent(parent):
 def paths_violate_constraint(paths, pos_constraint):
     violate_IDs = []
 
-    for ID in range(len(paths)):
+    # deep copy of path
+    temp_paths = []
+    for path in paths:
+        temp_path = []
+        for pos in path:
+            temp_path.append(pos)
+        temp_paths.append(temp_path)
+
+    max_len = max(len(p) for p in temp_paths)
+    for path in temp_paths:
+        for i in range(max_len-len(path)):
+            path.append(path[len(path)-1])
+
+    for ID in range(len(temp_paths)):
         if ID == pos_constraint['agent']:
             continue
-        path = paths[ID]
+        path = temp_paths[ID]
         # check vertext positive constraint
         if len(pos_constraint['loc']) == 1:
-            for t in range(len(path)):
-                if path[t] == pos_constraint['loc'][0] and t == pos_constraint['timestep']:
-                    violate_IDs.append(ID)
+            if path[pos_constraint['timestep']] == pos_constraint['loc'][0]:
+                violate_IDs.append(ID)
         # check edge positive constraint
         else:
-            for t in range(len(path)-1):
-                if path[t] == pos_constraint['loc'][1] and path[t+1] == pos_constraint['loc'][0] and (t+1) == pos_constraint['timestep']:
-                    violate_IDs.append(ID)
+            if path[pos_constraint['timestep']-1] == pos_constraint['loc'][1] and path[pos_constraint['timestep']] == pos_constraint['loc'][0]:
+                violate_IDs.append(ID)
     return violate_IDs
 
 
@@ -215,6 +226,7 @@ class CBSSolver(object):
         root['cost'] = get_sum_of_cost(root['paths'])
         root['collisions'] = detect_collisions(root['paths'])
         self.push_node(root)
+        #print(root)
 
         ##############################
         # Task 3.3: High-Level Search
@@ -245,7 +257,8 @@ class CBSSolver(object):
             for constraint in constraints:
                 # deep copy parent attributes to child 
                 child_constarints = copy_parent(curr['constraints'])
-                child_constarints.append(constraint)
+                if constraint not in child_constarints:
+                    child_constarints.append(constraint)
                 child_paths = copy_parent(curr['paths'])
                 constrainted_agent = constraint['agent']
                 child = {'cost':0, 'constraints':child_constarints, 'paths':child_paths, 'collisions':[]}
@@ -259,10 +272,12 @@ class CBSSolver(object):
                         child['collisions'] = detect_collisions(child['paths'])
                         child['cost'] = get_sum_of_cost(child['paths'])
                         self.push_node(child)
+                        #print(child)
                 else:
                     Add = True
                     # update all agents' path
                     violate_IDs = paths_violate_constraint(curr['paths'], constraint)
+
                     # replace the constrainted agent path by new path in parent paths
                     for each_agent in violate_IDs:
                         path = a_star(self.my_map, self.starts[each_agent], self.goals[each_agent], 
@@ -270,8 +285,8 @@ class CBSSolver(object):
                         if path is not None:
                             child['paths'][each_agent] = path
                         else:
-                            break
                             Add = False
+                            break
 
                     #update the constraint agent 
                     path = a_star(self.my_map, self.starts[constrainted_agent], self.goals[constrainted_agent], 
@@ -282,10 +297,9 @@ class CBSSolver(object):
                         child['cost'] = get_sum_of_cost(child['paths'])
                     else:
                         Add = False
-
                     if Add:
                         self.push_node(child)
-                        print(child)
+                        #print(child)
 
         raise BaseException('No solutions')
 

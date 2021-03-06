@@ -64,8 +64,14 @@ def build_constraint_table(constraints, agent):
     # expand positive constraints to negative constraints
     for constraint in temp_constraints:
         if constraint['positive'] == 1 and constraint['agent'] != agent:
-            temp_constraints.append({'agent':agent, 'loc':constraint['loc'], 'timestep':constraint['timestep'],
+            # vertex constraint:
+            if len(constraint['loc']) == 1:
+                temp_constraints.append({'agent':agent, 'loc':constraint['loc'], 'timestep':constraint['timestep'],
                                      'positive':0})
+            # edge constraint:
+            else:
+                temp_constraints.append({'agent':agent, 'loc':[constraint['loc'][1], constraint['loc'][0]], 
+                                        'timestep':constraint['timestep'], 'positive':0})
 
     for constraint in temp_constraints:
         # the constraint belong to the agent if the constraint is specific for 
@@ -115,7 +121,9 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
                 # check positive constraint
                 else:
                     if same_time_constraint['loc'][0] == next_loc:
-                        return True
+                        continue
+                    else:
+                        return False
             # check edge constraint
             else:
                 # check negative constraint
@@ -125,7 +133,9 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
                 # check positive constraint      
                 else:
                     if same_time_constraint['loc'][0] == curr_loc and same_time_constraint['loc'][1] == next_loc:
-                        return True
+                        continue
+                    else:
+                        return False
 
     # prohibit for all future time, it's only possible to be vertex constraint 
     elif (-1) in constraint_table.keys():
@@ -173,6 +183,7 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
 
     # Task 1.2 add constraint_table 
     constraint_table = build_constraint_table(constraints, agent)
+
     max_time = 0
     if len(constraint_table.keys()) > 0:
         max_time = max(constraint_table.keys())
