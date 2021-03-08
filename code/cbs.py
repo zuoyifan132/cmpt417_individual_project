@@ -167,6 +167,27 @@ def paths_violate_constraint(paths, pos_constraint):
     return violate_IDs
 
 
+# helper function: eliminate duplicates in path:
+# example: [(5,5),(5,6),(5,6)] should be [(5,5),(5,6)]
+def eliminate_duplicates(path):
+    if path == None or len(path) <= 1:
+        return path
+
+    duplicate = path[len(path)-1]
+    i = len(path)-2
+    counter = 0
+    while i >= 0:
+        if path[i] == duplicate:
+            counter += 1
+        else:
+            break
+        i -= 1
+
+    path = path[:len(path)-counter]
+    return path
+
+
+
 class CBSSolver(object):
     """The high-level search of CBS."""
 
@@ -226,7 +247,7 @@ class CBSSolver(object):
         root['cost'] = get_sum_of_cost(root['paths'])
         root['collisions'] = detect_collisions(root['paths'])
         self.push_node(root)
-        #print(root)
+        print(root)
 
         ##############################
         # Task 3.3: High-Level Search
@@ -239,6 +260,7 @@ class CBSSolver(object):
 
         while len(self.open_list) > 0:
             curr = self.pop_node()     # firstly sorted with cost then sorted with #constraints 
+            print("cost: ", curr['cost'])
             # no collision return solution
             if len(curr['collisions']) == 0:
                 self.print_results(curr)
@@ -266,13 +288,15 @@ class CBSSolver(object):
                 if constraint['positive'] == 0:
                     path = a_star(self.my_map, self.starts[constrainted_agent], self.goals[constrainted_agent], 
                                   self.heuristics[constrainted_agent], constrainted_agent, child['constraints'])
+                    path = eliminate_duplicates(path)
                     if path is not None:
                         # replace the constrainted agent path by new path in parent paths
                         child['paths'][constrainted_agent] = path
                         child['collisions'] = detect_collisions(child['paths'])
                         child['cost'] = get_sum_of_cost(child['paths'])
                         self.push_node(child)
-                        #print(child)
+                        print("parent constrints: ", curr["constraints"])
+                        print(child)
                 else:
                     Add = True
                     # update all agents' path
@@ -282,6 +306,7 @@ class CBSSolver(object):
                     for each_agent in violate_IDs:
                         path = a_star(self.my_map, self.starts[each_agent], self.goals[each_agent], 
                                       self.heuristics[each_agent], each_agent, child['constraints'])
+                        path = eliminate_duplicates(path)
                         if path is not None:
                             child['paths'][each_agent] = path
                         else:
@@ -291,15 +316,18 @@ class CBSSolver(object):
                     #update the constraint agent 
                     path = a_star(self.my_map, self.starts[constrainted_agent], self.goals[constrainted_agent], 
                                   self.heuristics[constrainted_agent], constrainted_agent, child['constraints'])
+                    path = eliminate_duplicates(path)
                     if path is not None:
                         child['paths'][constrainted_agent] = path
                         child['collisions'] = detect_collisions(child['paths'])
                         child['cost'] = get_sum_of_cost(child['paths'])
                     else:
                         Add = False
+                    print(Add)
                     if Add:
                         self.push_node(child)
-                        #print(child)
+                        print("parent constrints: ", curr["constraints"])
+                        print(child)
 
         raise BaseException('No solutions')
 

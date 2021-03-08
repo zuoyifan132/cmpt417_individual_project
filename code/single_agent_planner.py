@@ -193,7 +193,12 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
     closed_list[(root['loc'], 0)] = root
 
     # add time limit to avoid infinite loop
-    time_limit = (agent+1)*len(my_map)*len(my_map[0])
+    possible_agent_number = 0
+    for row in my_map:
+        for col in row:
+            if col != '@':
+                possible_agent_number += 1
+    time_limit = (possible_agent_number-1)*possible_agent_number         
 
     while len(open_list) > 0 and time_limit > 0:
         curr = pop_node(open_list)
