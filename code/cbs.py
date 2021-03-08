@@ -247,7 +247,6 @@ class CBSSolver(object):
         root['cost'] = get_sum_of_cost(root['paths'])
         root['collisions'] = detect_collisions(root['paths'])
         self.push_node(root)
-        print(root)
 
         ##############################
         # Task 3.3: High-Level Search
@@ -260,7 +259,6 @@ class CBSSolver(object):
 
         while len(self.open_list) > 0:
             curr = self.pop_node()     # firstly sorted with cost then sorted with #constraints 
-            print("cost: ", curr['cost'])
             # no collision return solution
             if len(curr['collisions']) == 0:
                 self.print_results(curr)
@@ -295,8 +293,6 @@ class CBSSolver(object):
                         child['collisions'] = detect_collisions(child['paths'])
                         child['cost'] = get_sum_of_cost(child['paths'])
                         self.push_node(child)
-                        print("parent constrints: ", curr["constraints"])
-                        print(child)
                 else:
                     Add = True
                     # update all agents' path
@@ -323,11 +319,8 @@ class CBSSolver(object):
                         child['cost'] = get_sum_of_cost(child['paths'])
                     else:
                         Add = False
-                    print(Add)
                     if Add:
                         self.push_node(child)
-                        print("parent constrints: ", curr["constraints"])
-                        print(child)
 
         raise BaseException('No solutions')
 

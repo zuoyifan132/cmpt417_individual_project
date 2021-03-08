@@ -46,6 +46,7 @@ class PrioritizedPlanningSolver(object):
             path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
                           i, constraints)
             if path is None:
+                print(constraints)
                 raise BaseException('No solutions')
             result.append(path)
 

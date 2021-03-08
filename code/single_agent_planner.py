@@ -138,7 +138,7 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
                         return False
 
     # prohibit for all future time, it's only possible to be vertex constraint 
-    elif (-1) in constraint_table.keys():
+    if (-1) in constraint_table.keys():
         for same_time_constraint in constraint_table[-1]:
             if same_time_constraint['loc'][0] == next_loc:
                 return False
@@ -226,6 +226,8 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
 
             # Task 1.2 check constraint, if doesn't satisfied just prune it
             if not is_constrained(curr['loc'], child['loc'], child['timestep'], constraint_table):
+                if agent == 3:
+                    print(curr['loc'], child['loc'], child['timestep'])
                 continue
 
             # expand the old(in closed list) child if with smaller f-val        
@@ -242,4 +244,6 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
 
         time_limit -= 1
 
+    print("no path: ", agent)
+    print(time_limit)
     return None  # Failed to find solutions
