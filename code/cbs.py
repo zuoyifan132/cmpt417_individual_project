@@ -136,35 +136,22 @@ def copy_parent(parent):
     return copy
 
 # helper function: 
-def paths_violate_constraint(paths, pos_constraint):
-    violate_IDs = []
-
-    # deep copy of path
-    temp_paths = []
-    for path in paths:
-        temp_path = []
-        for pos in path:
-            temp_path.append(pos)
-        temp_paths.append(temp_path)
-
-    max_len = max(len(p) for p in temp_paths)
-    for path in temp_paths:
-        for i in range(max_len-len(path)):
-            path.append(path[len(path)-1])
-
-    for ID in range(len(temp_paths)):
-        if ID == pos_constraint['agent']:
+def paths_violate_constraint(constraint, paths):
+    assert constraint['positive'] is 1
+    rst = []
+    for i in range(len(paths)):
+        if i == constraint['agent']:
             continue
-        path = temp_paths[ID]
-        # check vertext positive constraint
-        if len(pos_constraint['loc']) == 1:
-            if path[pos_constraint['timestep']] == pos_constraint['loc'][0]:
-                violate_IDs.append(ID)
-        # check edge positive constraint
-        else:
-            if path[pos_constraint['timestep']-1] == pos_constraint['loc'][1] and path[pos_constraint['timestep']] == pos_constraint['loc'][0]:
-                violate_IDs.append(ID)
-    return violate_IDs
+        curr = get_location(paths[i], constraint['timestep'])
+        prev = get_location(paths[i], constraint['timestep'] - 1)
+        if len(constraint['loc']) == 1:  # vertex constraint
+            if constraint['loc'][0] == curr:
+                rst.append(i)
+        else:  # edge constraint
+            if constraint['loc'][0] == prev or constraint['loc'][1] == curr \
+                    or constraint['loc'] == [curr, prev]:
+                rst.append(i)
+    return rst
 
 
 # helper function: eliminate duplicates in path:
@@ -296,7 +283,7 @@ class CBSSolver(object):
                 else:
                     Add = True
                     # update all agents' path
-                    violate_IDs = paths_violate_constraint(curr['paths'], constraint)
+                    violate_IDs = paths_violate_constraint(constraint, curr['paths'])
 
                     # replace the constrainted agent path by new path in parent paths
                     for each_agent in violate_IDs:

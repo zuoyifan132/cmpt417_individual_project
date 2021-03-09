@@ -76,13 +76,15 @@ def build_constraint_table(constraints, agent):
     for constraint in temp_constraints:
         # the constraint belong to the agent if the constraint is specific for 
         if constraint['agent'] == agent:
-            time_step = constraint['timestep'] 
+            time_step = -1
+            if type(constraint['timestep']) == type(1):
+                time_step = constraint['timestep']
             # new time step
             if time_step not in constraint_table.keys():
                 constraint_table[time_step] = []
             constraint_table[time_step].append(constraint)
 
-    return constraint_table            
+    return constraint_table          
 
 
 def get_location(path, time):
@@ -140,7 +142,7 @@ def is_constrained(curr_loc, next_loc, next_time, constraint_table):
     # prohibit for all future time, it's only possible to be vertex constraint 
     if (-1) in constraint_table.keys():
         for same_time_constraint in constraint_table[-1]:
-            if same_time_constraint['loc'][0] == next_loc:
+            if same_time_constraint['loc'][0] == next_loc and same_time_constraint['timestep'][1] <= next_time:
                 return False
 
     return True
@@ -198,7 +200,9 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
         for col in row:
             if col != '@':
                 possible_agent_number += 1
-    time_limit = (possible_agent_number-1)*possible_agent_number         
+    time_limit = (possible_agent_number-1)*possible_agent_number
+    # Prioritized planning time limit
+    #time_limit = len(constraints) + len(my_map)*len(my_map[0]) 
 
     while len(open_list) > 0 and time_limit > 0:
         curr = pop_node(open_list)
@@ -226,8 +230,6 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
 
             # Task 1.2 check constraint, if doesn't satisfied just prune it
             if not is_constrained(curr['loc'], child['loc'], child['timestep'], constraint_table):
-                if agent == 3:
-                    print(curr['loc'], child['loc'], child['timestep'])
                 continue
 
             # expand the old(in closed list) child if with smaller f-val        
@@ -244,6 +246,4 @@ def a_star(my_map, start_loc, goal_loc, h_values, agent, constraints):
 
         time_limit -= 1
 
-    print("no path: ", agent)
-    print(time_limit)
     return None  # Failed to find solutions

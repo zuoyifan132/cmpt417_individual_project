@@ -46,7 +46,7 @@ class PrioritizedPlanningSolver(object):
             path = a_star(self.my_map, self.starts[i], self.goals[i], self.heuristics[i],
                           i, constraints)
             if path is None:
-                print(constraints)
+                print(result)
                 raise BaseException('No solutions')
             result.append(path)
 
@@ -83,7 +83,7 @@ class PrioritizedPlanningSolver(object):
             # add additional constraints
             # -1 represent all future time
             for each_agent in range(i+1, self.num_of_agents):
-                need_to_append = {'agent':each_agent, 'loc':[current_path[len(current_path)-1]], 'timestep':-1, 
+                need_to_append = {'agent':each_agent, 'loc':[current_path[len(current_path)-1]], 'timestep':(-1, len(current_path)-1), 
                                   'positive':0}
                 if need_to_append not in constraints:
                         constraints.append(need_to_append)
